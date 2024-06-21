@@ -4,7 +4,7 @@ import app.cash.turbine.turbineScope
 import com.valoy.overplay.CoroutineMainDispatcherRule
 import com.valoy.overplay.domain.models.Gyroscope
 import com.valoy.overplay.domain.repository.RotationRepository
-import com.valoy.overplay.infra.repository.SessionDataStoreRepository
+import com.valoy.overplay.domain.usecase.SessionUseCase
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -22,7 +22,7 @@ import org.junit.Test
 class MainViewModelTest {
     private lateinit var viewModel: MainViewModel
     private val rotationRepository: RotationRepository = mockk(relaxed = true)
-    private val sessionRepository: SessionDataStoreRepository = mockk(relaxed = true)
+    private val sessionUseCase: SessionUseCase = mockk(relaxed = true)
 
     @get:Rule
     val coroutineRule = CoroutineMainDispatcherRule(StandardTestDispatcher())
@@ -33,16 +33,14 @@ class MainViewModelTest {
     fun setUp() {
         viewModel = MainViewModel(
             rotationRepository,
-            sessionRepository,
-            SESSION_TIMEOUT,
+            sessionUseCase,
             coroutineRule.dispatcher
         )
     }
 
     @Test
-    fun `on new session`() = testCoroutineScope.runTest {
-        coEvery { sessionRepository.getTime() } returns System.currentTimeMillis()
-        coEvery { sessionRepository.getCount() } returns ZERO
+    fun `on new session start`() = testCoroutineScope.runTest {
+        coEvery { sessionUseCase.getSessionCount() } returns ONE
 
         viewModel.onResume()
 
@@ -53,6 +51,8 @@ class MainViewModelTest {
             assertEquals(INITIAL_SESSION_STATE, initial)
             assertEquals(NEW_SESSION_STATE, newSession)
         }
+
+        coVerify(exactly = 1) { sessionUseCase.startNewSessionCount() }
     }
 
     @Test
@@ -62,6 +62,7 @@ class MainViewModelTest {
             LEFT_GYROSCOPE,
             RIGHT_GYROSCOPE
         )
+        coEvery { sessionUseCase.getSessionCount() } returns ONE
 
         viewModel.onResume()
 
@@ -85,7 +86,7 @@ class MainViewModelTest {
 
         advanceUntilIdle()
 
-        coVerify(exactly = 1) { sessionRepository.saveTime(any()) }
+        coVerify(exactly = 1) { sessionUseCase.saveSessionTime() }
         coVerify(exactly = 1) { rotationRepository.flush() }
     }
 
@@ -96,7 +97,6 @@ class MainViewModelTest {
         const val DEFAULT_SIZE = 16
         const val TWELVE_SIZE = 12
         const val TWENTY_SIZE = 20
-        const val SESSION_TIMEOUT = 1
         val DEFAULT_GYROSCOPE = Gyroscope(0.0, 0.0, -50.0)
         val LEFT_GYROSCOPE = Gyroscope(0.0, 0.0, 35.0)
         val RIGHT_GYROSCOPE = Gyroscope(0.0, 0.0, -25.0)

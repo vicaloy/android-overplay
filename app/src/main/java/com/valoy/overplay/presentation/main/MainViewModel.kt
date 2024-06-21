@@ -7,6 +7,7 @@ import com.valoy.overplay.di.SessionTimeout
 import com.valoy.overplay.domain.models.Gyroscope
 import com.valoy.overplay.domain.repository.RotationRepository
 import com.valoy.overplay.domain.repository.SessionRepository
+import com.valoy.overplay.domain.usecase.SessionUseCase
 import com.valoy.overplay.util.tryCatch
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -18,8 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val rotationRepository: RotationRepository,
-    private val sessionRepository: SessionRepository,
-    @SessionTimeout private val sessionTimeout: Int,
+    private val sessionUseCase: SessionUseCase,
     @IoDispatcher private val dispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
@@ -56,7 +56,7 @@ class MainViewModel @Inject constructor(
     private fun saveSessionTime() {
         viewModelScope.launch(dispatcher) {
             tryCatch {
-                sessionRepository.saveTime(System.currentTimeMillis())
+                sessionUseCase.saveSessionTime()
             }
         }
     }
@@ -64,20 +64,14 @@ class MainViewModel @Inject constructor(
     private fun startNewSession() {
         viewModelScope.launch(dispatcher) {
             tryCatch {
-                val time = sessionRepository.getTime()
-                val count = sessionRepository.getCount() + ONE
-                val elapsedTime = System.currentTimeMillis() - time
-                if (shouldStartNewSession(elapsedTime)) {
-                    uiState.update { state ->
-                        state.copy(sessionCount = count)
-                    }
-                    sessionRepository.saveCount(count)
+                sessionUseCase.startNewSessionCount()
+                val count = sessionUseCase.getSessionCount()
+                _uiState.update { state ->
+                    state.copy(sessionCount = count)
                 }
             }
         }
     }
-
-    private fun shouldStartNewSession(elapsedTime: Long): Boolean = elapsedTime > sessionTimeout
 
     private fun calculateLetterSize(degrees: Double): Int = when {
         degrees >= THIRTY_DEGREES_LEFT -> TWELVE_SIZE
@@ -87,7 +81,6 @@ class MainViewModel @Inject constructor(
 
     private companion object {
         const val ZERO = 0
-        const val ONE = 1
         const val DEFAULT_SIZE = 16
         const val TWELVE_SIZE = 12
         const val TWENTY_SIZE = 20

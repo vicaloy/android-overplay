@@ -49,5 +49,5 @@ object AppModule {
 
     @Provides
     @SessionTimeout
-    fun provideSessionTimeout(): Int = 600
+    fun provideSessionTimeout(): Int = 10 * 60 * 1000
 }

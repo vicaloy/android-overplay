@@ -5,7 +5,6 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import com.valoy.overplay.domain.models.Gyroscope
-import com.valoy.overplay.infra.repository.GyroscopeUnavailableException
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow

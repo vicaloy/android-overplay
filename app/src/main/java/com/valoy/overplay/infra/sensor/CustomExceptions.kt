@@ -1,4 +1,4 @@
-package com.valoy.overplay.infra.repository
+package com.valoy.overplay.infra.sensor
 
 class GyroscopeUnavailableException : Exception()
 

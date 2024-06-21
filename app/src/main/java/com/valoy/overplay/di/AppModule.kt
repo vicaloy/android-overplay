@@ -6,7 +6,7 @@ import android.hardware.SensorManager
 import com.valoy.overplay.domain.repository.RotationRepository
 import com.valoy.overplay.domain.repository.SessionRepository
 import com.valoy.overplay.infra.repository.AngularRotationRepository
-import com.valoy.overplay.infra.repository.SensorManagerUnavailableException
+import com.valoy.overplay.infra.sensor.SensorManagerUnavailableException
 import com.valoy.overplay.infra.repository.SessionDataStoreRepository
 import com.valoy.overplay.infra.sensor.GyroscopeSensorListener
 import com.valoy.overplay.infra.sensor.SensorListener

@@ -7,6 +7,7 @@ import com.valoy.overplay.di.SessionTimeout
 import com.valoy.overplay.domain.models.Gyroscope
 import com.valoy.overplay.domain.repository.RotationRepository
 import com.valoy.overplay.domain.repository.SessionRepository
+import com.valoy.overplay.util.tryCatch
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,9 +39,11 @@ class MainViewModel @Inject constructor(
 
     private fun startListeningGyroscope() {
         viewModelScope.launch(dispatcher) {
-            rotationRepository.get().collect { degrees ->
-                uiState.update { state ->
-                    state.copy(letterSize = calculateLetterSize((degrees as Gyroscope).z))
+            tryCatch {
+                rotationRepository.get().collect { degrees ->
+                    uiState.update { state ->
+                        state.copy(letterSize = calculateLetterSize((degrees as Gyroscope).z))
+                    }
                 }
             }
         }
@@ -52,20 +55,24 @@ class MainViewModel @Inject constructor(
 
     private fun saveSessionTime() {
         viewModelScope.launch(dispatcher) {
-            sessionRepository.saveTime(System.currentTimeMillis())
+            tryCatch {
+                sessionRepository.saveTime(System.currentTimeMillis())
+            }
         }
     }
 
     private fun startNewSession() {
         viewModelScope.launch(dispatcher) {
-            val time = sessionRepository.getTime()
-            val count = sessionRepository.getCount() + ONE
-            val elapsedTime = System.currentTimeMillis() - time
-            if (shouldStartNewSession(elapsedTime)) {
-                uiState.update { state ->
-                    state.copy(sessionCount = count)
+            tryCatch {
+                val time = sessionRepository.getTime()
+                val count = sessionRepository.getCount() + ONE
+                val elapsedTime = System.currentTimeMillis() - time
+                if (shouldStartNewSession(elapsedTime)) {
+                    uiState.update { state ->
+                        state.copy(sessionCount = count)
+                    }
+                    sessionRepository.saveCount(count)
                 }
-                sessionRepository.saveCount(count)
             }
         }
     }

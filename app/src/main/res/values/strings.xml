@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Overplay</string>
+    <string name="session_count">SESSION COUNT: %d</string>
+</resources>

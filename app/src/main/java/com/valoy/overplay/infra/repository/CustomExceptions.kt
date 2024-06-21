@@ -1,5 +1,5 @@
 package com.valoy.overplay.infra.repository
 
-class GyroscopeUnavailableException(message: String) : Exception(message)
+class GyroscopeUnavailableException : Exception()
 
-class SensorManagerUnavailableException(message: String) : Exception(message)
+class SensorManagerUnavailableException : Exception()

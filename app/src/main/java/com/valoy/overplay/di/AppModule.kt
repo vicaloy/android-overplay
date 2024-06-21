@@ -29,7 +29,7 @@ object AppModule {
     @Provides
     fun provideSensorManager(context: Context): SensorManager {
         return context.getSystemService(Context.SENSOR_SERVICE) as? SensorManager
-            ?: throw SensorManagerUnavailableException("SensorManager service not available")
+            ?: throw SensorManagerUnavailableException()
     }
 
     @Provides

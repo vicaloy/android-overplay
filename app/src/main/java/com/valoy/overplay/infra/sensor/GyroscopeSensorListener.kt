@@ -16,13 +16,12 @@ class GyroscopeSensorListener @Inject constructor(private val sensorManager: Sen
     SensorListener {
 
     private var listener: SensorEventListener? = null
-    private var isRotating = false
 
     override suspend fun subscribe(): Flow<Gyroscope> = callbackFlow {
         val gyroscopeSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
 
         if (gyroscopeSensor == null) {
-            close(GyroscopeUnavailableException("Gyroscope sensor not available"))
+            close(GyroscopeUnavailableException())
             return@callbackFlow
         }
 
@@ -34,16 +33,8 @@ class GyroscopeSensorListener @Inject constructor(private val sensorManager: Sen
                             val axisX = event.values[0]
                             val axisY = event.values[1]
                             val axisZ = event.values[2]
-                            val omegaMagnitude =
-                                sqrt((axisX * axisX + axisY * axisY + axisZ * axisZ).toDouble())
 
-                            /*if (omegaMagnitude > ROTATION_THRESHOLD && !isRotating) {
-                                isRotating = true
-                            } else if (omegaMagnitude <= ROTATION_THRESHOLD && isRotating) {
-                                isRotating = false
-                            }*/
-
-                            if (omegaMagnitude > ROTATION_THRESHOLD) {
+                            if (hasDeviceRotated(axisX, axisY, axisZ)) {
                                 trySend(
                                     Gyroscope(
                                         Math.toDegrees(axisX.toDouble()),
@@ -71,6 +62,12 @@ class GyroscopeSensorListener @Inject constructor(private val sensorManager: Sen
     override fun unsubscribe() {
         sensorManager.unregisterListener(listener)
         listener = null
+    }
+
+    private fun hasDeviceRotated(axisX: Float, axisY: Float, axisZ: Float): Boolean {
+        val omegaMagnitude =
+            sqrt((axisX * axisX + axisY * axisY + axisZ * axisZ).toDouble())
+        return omegaMagnitude > ROTATION_THRESHOLD
     }
 
     companion object {

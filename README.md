@@ -13,10 +13,9 @@ Provides a Flow that emits gyroscope data, allowing easy subscription and unsubs
 Offers a clean and modular approach to handling sensor events.
 
 - Two Subscription Options:
-Manual Subscription/Unsubscription:
+-   Manual Subscription/Unsubscription:
 Use explicit methods to start and stop listening to the gyroscope sensor.
-
-Automatic Flow Cancellation:
+-   Automatic Flow Cancellation:
 Collect the Flow in a ViewModel or Coroutine scope, and cancel the Job when you no longer need updates. See logcat with "MainViewModel".
 
 ## 🛠️ Technologies Used

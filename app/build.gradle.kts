@@ -52,6 +52,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.lifecycle.runtime.compose.android)
     ksp(libs.hilt.android.compiler)
     implementation(libs.hilt.android)
     implementation(libs.androidx.core.ktx)
@@ -64,6 +65,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation (libs.androidx.activity.ktx )
     implementation(libs.androidx.datastore )
+    implementation(libs.androidx.lifecycle.compose)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation (libs.junit)
     testImplementation (libs.mockk)

@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,7 +19,12 @@ import com.valoy.overplay.presentation.theme.OverplayTheme
 
 @Composable
 fun MainScreen(viewModel: MainViewModel) {
-    val uiState by viewModel.uiState.collectAsState()
+    // Collect the UI state by subscribing to the GyroscopeSensorListener
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    // Collect the UI state by listening to the GyroscopeSensorFlow
+    val gyroscopeSensorFlow by viewModel.gyroscopeStateFlow.collectAsStateWithLifecycle()
+
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Session(
             session = uiState.sessionCount,

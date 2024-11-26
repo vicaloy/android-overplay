@@ -12,7 +12,7 @@ Converts sensor data into a Flow for reactive programming.
 Provides a Flow that emits gyroscope data, allowing easy subscription and unsubscription.
 Offers a clean and modular approach to handling sensor events.
 
-- Two Subscription Options:
+### Two Subscription Options:
 -   Manual Subscription/Unsubscription:
 Use explicit methods to start and stop listening to the gyroscope sensor.
 -   Automatic Flow Cancellation:
